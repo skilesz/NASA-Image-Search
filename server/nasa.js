@@ -9,10 +9,31 @@ async function searchImages({ query, startYear, endYear }) {
             media_type: "image",
             year_start: startYear,
             year_end: endYear,
+            page_size: 20,
         },
     });
 
-    return response.data;
+    const items = response.data.collection.items.map((item) => {
+        const metadata = item.data[0];
+
+        const imageLink = item.links?.find(
+            (link) => link.rel === "preview"
+        );
+
+        return {
+            id: metadata.nasa_id,
+            title: metadata.title,
+            description: metadata.description,
+            dateCreated: metadata.date_created,
+            keywords: metadata.keywords || [],
+            photographer: metadata.photographer,
+            imageUrl: imageLink?.href,
+        };
+    });
+
+    return {
+        items,
+    };
 }
 
 module.exports = {
