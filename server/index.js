@@ -24,18 +24,38 @@ app.get("/api/key-test", (req, res) => {
 // Photo query endpoint
 app.get("/api/photos", async (req, res) => {
     try {
-        const { query, startYear, endYear } = req.query;
+        const { query, startYear, endYear, page = "1" } = req.query;
 
-        if (!query) {
+        const start = startYear ? Number(startYear) : undefined;
+        const end = endYear? Number(endYear) : undefined;
+        const pageNumber = Number(page);
+
+        // Check that years are integers
+        if (!Number.isInteger(start) || !Number.isInteger(end)) {
             return res.status(400).json({
-                error: "Search query required"
+                error: "Start year and end year must be integers",
+            });
+        }
+
+        // Check that start year is not later than end year
+        if (start > end) {
+            return res.status(400).json( {
+                error: "Start year cannot be after end year",
+            });
+        }
+
+        // Validate that page number is a positive integer
+        if (!Number.isInteger(pageNumber) || pageNumber < 1) {
+            return res.status(400).json( {
+                error: "Page must be a positive integer",
             });
         }
 
         const data = await searchImages({
-            query,
-            startYear,
-            endYear,
+            query: query?.trim(),
+            startYear: start,
+            endYear: end,
+            page: pageNumber,
         });
 
         res.json(data);
