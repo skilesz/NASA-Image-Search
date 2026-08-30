@@ -10,12 +10,36 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+
+  const totalPages = pagination
+    ? Math.ceil(
+        pagination.totalHits / pagination.pageSize
+      )
+    : 0;
+
   // Custom submit function
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const validationError = validateForm();
+
+    if (validationError) {
+      setError(validationError);
+      setItems([]);
+      setPagination(null);
+      return;
+    }
+
+    await searchImages(1);
+  };
+
+  // Search images
+  const searchImages = async (pageNumber) => {
     setLoading(true);
     setError("");
+    setItems([]);
 
     try {
       const params = new URLSearchParams();
@@ -32,24 +56,55 @@ function App() {
         params.set("endYear", endYear);
       }
 
-      params.set("page", "1");
+      params.set("page", pageNumber.toString());
 
       const response = await fetch(
         `http://localhost:3001/api/photos?${params}`
       );
 
       if (!response.ok) {
-        throw new Error("Failed to retrieve images");
+        const data = await response.json();
+        throw new Error(data.error || "Failed to retrieve images");
       }
 
       const data = await response.json();
 
       setItems(data.items);
+      setPagination(data.pagination);
+      setPage(pageNumber);
     } catch (error) {
       setError(error.message);
+      setPagination(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    if (
+      startYear &&
+      !Number.isInteger(Number(startYear))
+    ) {
+      return "Start year must be a whole number."
+    }
+
+    if (
+      endYear &&
+      !Number.isInteger(Number(endYear))
+    ) {
+      return "End year must be a whole number."
+    }
+
+    if (
+      startYear &&
+      endYear &&
+      Number(startYear) > Number(endYear)
+    ) {
+      return "Start year cannot be after end year."
+    }
+
+    return "";
   };
 
   return (
@@ -101,11 +156,32 @@ function App() {
             />
 
             <h2>{item.title}</h2>
-
-            <p>{item.dateCreated}</p>
           </div>
         ))}
       </div>
+
+      {pagination && totalPages > 1 && (
+        <div>
+          <button
+            onClick={() => searchImages(page - 1)}
+            disabled={page === 1 || loading}
+          >
+            Previous
+          </button>
+
+          <span>
+            Page {page} of {totalPages}
+          </span>
+
+          <button
+            onClick={() => searchImages(page + 1)}
+            disabled={page === totalPages || loading}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
