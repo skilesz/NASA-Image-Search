@@ -30,15 +30,22 @@ app.get("/api/photos", async (req, res) => {
         const end = endYear? Number(endYear) : undefined;
         const pageNumber = Number(page);
 
-        // Check that years are integers
-        if (!Number.isInteger(start) || !Number.isInteger(end)) {
+        // Check that start year is integer, if it exists
+        if (start !== undefined && !Number.isInteger(start)) {
             return res.status(400).json({
-                error: "Start year and end year must be integers",
+                error: "Start year must be an integer",
+            });
+        }
+
+        // Check that end year is integer, if it exists
+        if (end !== undefined && !Number.isInteger(end)) {
+            return res.status(400).json({
+                error: "End year must be an integer",
             });
         }
 
         // Check that start year is not later than end year
-        if (start > end) {
+        if (start !== undefined && end !== undefined && start > end) {
             return res.status(400).json( {
                 error: "Start year cannot be after end year",
             });
@@ -62,8 +69,8 @@ app.get("/api/photos", async (req, res) => {
     } catch (error) {
         console.error("NASA API error:", error.message);
 
-        res.status(500).json({
-            error: "Failed to retrieve images from NASA",
+        res.status(502).json({
+            error: "NASA API request failed",
         });
     }
 });
