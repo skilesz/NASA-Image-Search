@@ -1,6 +1,10 @@
-function ImageGrid({ items }) {
-    if (items.length === 0) {
+function ImageGrid({ items, loading, error }) {
+    if (loading || error) {
         return null;
+    }
+
+    if (items.length === 0) {
+        return <p className="no-results">No images found.</p>;
     }
 
     return (

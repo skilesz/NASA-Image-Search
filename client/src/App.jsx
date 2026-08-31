@@ -16,13 +16,14 @@ function App() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
+  // Total pages
   const totalPages = pagination
     ? Math.ceil(
         pagination.totalHits / pagination.pageSize
       )
     : 0;
 
-  // Custom submit function
+  // Handle submit (in place of default form submit)
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -135,7 +136,7 @@ function App() {
           <p className="error">{error}</p>
         )}
 
-        <ImageGrid items={items} />
+        <ImageGrid items={items} loading={loading} error={error} />
 
         <Pagination
           page={page}

@@ -58,6 +58,7 @@ app.get("/api/photos", async (req, res) => {
             });
         }
 
+        // Call searchImages()
         const data = await searchImages({
             query: query?.trim(),
             startYear: start,

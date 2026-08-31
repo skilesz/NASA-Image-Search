@@ -13,10 +13,12 @@ async function searchImages({ query, startYear, endYear, page }) {
         page,
     };
 
+    // Call NASA API
     const response = await axios.get(NASA_API_URL, {
         params,
     });
 
+    // Simplify image items for frontend
     const items = response.data.collection.items.map((item) => {
         const metadata = item.data[0];
 
@@ -35,6 +37,7 @@ async function searchImages({ query, startYear, endYear, page }) {
         };
     });
 
+    // Response
     return {
         items,
         pagination: {
