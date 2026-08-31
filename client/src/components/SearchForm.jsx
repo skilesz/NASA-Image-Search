@@ -10,7 +10,7 @@ function SearchForm({
     return (
         <form className="search-form" onSubmit={onSubmit}>
             <div className="form-group search-field">
-                <label htmlFor="query">Search</label>
+                <label htmlForm="query">Search</label>
                 <input
                     id="query"
                     type="text"
@@ -21,7 +21,7 @@ function SearchForm({
             </div>
 
             <div className="form-group">
-                <label htmlFor="startYear">Start Year</label>
+                <label htmlForm="startYear">Start Year</label>
                 <input
                     id="startYear"
                     type="number"
