@@ -4,8 +4,8 @@ Simple web application for searching NASA's Image and Video Library by keyword a
 
 ## Tech Stack
 
-- React + Vite -- frontend
-- Node.js + Express -- backend
+- React + Vite -> frontend
+- Node.js + Express -> backend
 - NASA Image and Video Library API
 
 ## Running Locally
