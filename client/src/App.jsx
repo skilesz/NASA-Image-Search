@@ -1,4 +1,7 @@
 import { useState } from "react";
+import SearchForm from "./components/SearchForm";
+import ImageGrid from "./components/ImageGrid";
+import Pagination from "./components/Pagination";
 
 function App() {
   // State
@@ -108,80 +111,39 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>NASA Image Search</h1>
+    <div className="app">
+      <header className="header">
+        <h1>NASA Image Search</h1>
+      </header>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Search:
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </label>
+      <main>
+        <SearchForm
+          query={query}
+          setQuery={setQuery}
+          startYear={startYear}
+          setStartYear={setStartYear}
+          endYear={endYear}
+          setEndYear={setEndYear}
+          onSubmit={handleSubmit}
+        />
 
-        <label>
-          Start Year:
-          <input
-            type="number"
-            value={startYear}
-            onChange={(event) => setStartYear(event.target.value)}
-          />
-        </label>
+        {loading && (
+          <p className="status">Searching NASA Image and Video Library...</p>
+        )}
 
-        <label>
-          End Year:
-          <input
-            type="number"
-            value={endYear}
-            onChange={(event) => setEndYear(event.target.value)}
-          />
-        </label>
+        {error && (
+          <p className="error">{error}</p>
+        )}
 
-        <button type="submit">Search</button>
-      </form>
+        <ImageGrid items={items} />
 
-      {loading && <p>Searching NASA library...</p>}
-
-      {error && <p>{error}</p>}
-
-      <div>
-        {items.map((item) => (
-          <div key={item.id}>
-            <img
-              src={item.imageUrl}
-              alt={item.title}
-              width="300"
-            />
-
-            <h2>{item.title}</h2>
-          </div>
-        ))}
-      </div>
-
-      {pagination && totalPages > 1 && (
-        <div>
-          <button
-            onClick={() => searchImages(page - 1)}
-            disabled={page === 1 || loading}
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {page} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => searchImages(page + 1)}
-            disabled={page === totalPages || loading}
-          >
-            Next
-          </button>
-        </div>
-      )}
-
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          loading={loading}
+          onPageChange={searchImages}
+        />
+      </main>
     </div>
   );
 }
